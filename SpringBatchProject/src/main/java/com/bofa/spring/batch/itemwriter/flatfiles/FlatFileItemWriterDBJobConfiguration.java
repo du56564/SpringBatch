@@ -1,4 +1,4 @@
-package com.bofa.spring.batch.itemreader.mysql;
+package com.bofa.spring.batch.itemwriter.flatfiles;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,36 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
+
 @Configuration
-public class ItemReaderJobConfiguration {
+public class FlatFileItemWriterDBJobConfiguration {
 
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;
 	
 	@Autowired
 	private StepBuilderFactory stepBuilderFactory;
-
+	
 	@Autowired
 	private DataSource dataSource;
-	
-/*	@Bean
-	public JdbcCursorItemReader<Customer> cursorItemReader(){
-		JdbcCursorItemReader<Customer> reader = new JdbcCursorItemReader<>();
-		reader.setSql("Select id, fistName, lastName, birthDate from customer order by lastname, firstName");
-		reader.setDataSource(dataSource);
-		reader.setRowMapper(new CustomRowMapper());
-		return reader;
-	}
-	
-	@Bean
-	public ItemWriter<Customer> customItemWriter(){
-		return items->{
-			for (Customer customer : items) {
-				System.out.println(customer.toString());
-			}
-		};
-	}
-*/
+
 	@Bean
 	public JdbcPagingItemReader<Customer> pagingItemReader(){
 		JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
@@ -57,28 +41,31 @@ public class ItemReaderJobConfiguration {
 		queryProvider.setSelectClause("id, firstName, lastName, birthdate");
 		queryProvider.setFromClause("from customer");
 		
-		Map<String, Order> sortKey = new HashMap<>(2);
+		Map<String, Order> sortKey = new HashMap<>(1);
 		sortKey.put("id",Order.ASCENDING );
 		queryProvider.setSortKeys(sortKey);
 		reader.setQueryProvider(queryProvider);
 		
+		System.out.println("Reading....."+reader.getPageSize());
 		return reader;	
 	}
-
+	
 	@Bean
-	public Step customItemReaderDBStep() {
-		return stepBuilderFactory.get("customItemReaderDBStep")
-				.<Customer, Customer>chunk(10)
-				//.reader(new CustomItemReader(dataSource).cursorItemReader())
+	public Step customFlatFileItemWriterStep() throws Exception {
+		return stepBuilderFactory.get("customFlatFileItemWriterStep")
+				.<Customer,Customer>chunk(10)
 				.reader(pagingItemReader())
-				.writer(new CustomItemWriter().cutomItemWriter())
+				//.writer(new CustomFileFlatItemWriter().flatFileItemWriterFromDB())
+				.writer(new CustomFileFlatItemWriter().flatFileItemWriterFromDBCustomAggregator())
 				.build();
 	}
 	@Bean
-	public Job jobItemDBReader13() {
-		return jobBuilderFactory.get("jobItemDBReader13")
-				.start(customItemReaderDBStep())
+	public Job jobFlatFileItemWriterFromj() throws Exception {
+		return jobBuilderFactory.get("jobFlatFileItemWriterFromDB9")
+				.start(customFlatFileItemWriterStep())
 				.build();
 	}
 
+	
+	
 }

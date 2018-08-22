@@ -24,6 +24,7 @@ public class CustomXMLItemReader {
 		reader.setResource(new ClassPathResource("/customers.xml"));
 		reader.setFragmentRootElementName("customer");
 		reader.setUnmarshaller(unMarshaller);
+		reader.afterPropertiesSet();
 		}catch (Exception e) {
 			System.err.println("Error::"+e.getMessage());
 		}

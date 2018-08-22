@@ -1,4 +1,4 @@
-package com.bofa.spring.batch.itemreader.mysql;
+package com.bofa.spring.batch.itemreader.xmlwriter;
 
 import java.util.Date;
 
@@ -41,10 +41,7 @@ public class Customer {
 	public Date getBirthdate() {
 		return birthdate;
 	}
-	
-	
-	
-	
+		
 	
 	
 }

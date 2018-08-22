@@ -1,4 +1,4 @@
-package com.bofa.spring.batch.itemreader.mysql;
+package com.bofa.spring.batch.itemwriter.mysql;
 
 import java.util.Date;
 
